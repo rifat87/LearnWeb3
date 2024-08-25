@@ -17,7 +17,7 @@
         </h1>
         <p>Here we can set or get the mood:</p>
         <label for="mood">Input Mood: </label> <br/>
-        <input type="text" id=" mood">
+        <input type="text" id="mood">
 
         <button onclick="getMood()">Get Mood</button>
         <button onclick="setMood()">Set Mood</button>
@@ -56,7 +56,7 @@
         //Make sure the MoodcontracAddress is i a double single/double quotes
         const MoodContractAddress= "0xf704Cb925ba6E2606f3Da43178F6d17d2f717349";
         const MoodContractABI = [
-	{
+	    {
 		"inputs": [],
 		"name": "getMood",
 		"outputs": [
@@ -83,6 +83,28 @@
 		    "type": "function"
     	    }
         ];
+
+        //interacting with frontend with contract
+
+        const MoodContractInstance = getContract({
+            address: MoodContractAddress,
+            abi: MoodContractABI,
+            client: walletClient,
+        });
+
+        getMood = async function () {
+            //since getMood in our contract is a read function, you wallet won't pop up
+            const mood = await MoodContractInstance.read.getMood();   
+            document.getElementById("showMood").innerText = `Your Mood: ${mood}`;         
+        }
+
+        setMood = async () => {
+            const mood = document.getElementById("mood").value;
+            //setMood in our contract is a write function so your wallet will pop up and will askk you to confirm your tracsaction, requireing some gas fees.
+            await MoodContractInstance.write.setMood([mood], {
+                account: address
+            });
+        }
      </script>
 </body>
 </html>
